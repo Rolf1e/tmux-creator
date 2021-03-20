@@ -1,5 +1,5 @@
-use tmux_creator::parser;
-use tmux_creator::session::{TmuxSession, TmuxWindow};
+use tmux_lib::parser;
+use tmux_lib::session::{TmuxSession, TmuxWindow};
 
 pub const BASE_PATH: &str = "/home/rolfie/projects";
 const TMUX_CREATOR: &str = "tmux-creator";

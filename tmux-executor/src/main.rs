@@ -1,10 +1,8 @@
 use std::env;
+use tmux_lib::config;
+use tmux_lib::parser;
+use tmux_lib::tmux;
 
-pub mod config;
-pub mod exception;
-pub mod parser;
-pub mod session;
-pub mod tmux;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
