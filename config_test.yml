@@ -1,0 +1,15 @@
+-
+  name: tmux-creator
+  working_directory: /home/rolfie/projects/tmux-creator
+  enter_command: nvim
+  window_name: vim
+  windows:
+    - name: rust
+      session_name: tmux-creator
+      working_directory: /home/rolfie/projects/tmux-creator
+    - name: test
+      session_name: tmux-creator
+      working_directory: /home/rolfie/projects/tmux-creator
+
+
+

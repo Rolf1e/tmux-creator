@@ -1,5 +1,6 @@
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct TmuxSession {
     name: String,                  // -s
     working_directory: String,     // -c
@@ -8,7 +9,7 @@ pub struct TmuxSession {
     windows: Vec<TmuxWindow>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct TmuxWindow {
     name: String,              // -n
     session_name: String,      // -t

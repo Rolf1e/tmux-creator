@@ -1,12 +1,22 @@
-use crate::config::{self, *};
+use crate::exception::TmuxCreatorException;
+use crate::parser;
 use crate::session::{TmuxSession, TmuxWindow};
 use std::process::Command;
 
-pub fn create_tmux(session_name: &str) {
-    if let Some(session) = found_session(&config::get_all_session(), &session_name) {
-        create_tmux_session(session);
+const TMUX: &str = "tmux";
+const NEW_SESSION: &str = "new-session";
+const NEW_WINDOW: &str = "new-window";
+
+pub fn create_tmux(session_name: &str, file_name: &str) -> Result<(), TmuxCreatorException> {
+    let config_sessions =
+        parser::parse_file(file_name).unwrap_or_else(|e| panic!("{}", e.message()));
+    if let Some(session) = found_session(&config_sessions, &session_name) {
+        Ok(create_tmux_session(session))
     } else {
-        println!("Tmux Session \"{}\" does not exist", session_name);
+        Err(TmuxCreatorException::ReadConfig(format!(
+            "Tmux Session \"{}\" does not exist",
+            session_name
+        )))
     }
 }
 
