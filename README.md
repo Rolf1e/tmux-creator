@@ -3,8 +3,8 @@ I wanted to play a bit with Rust term client making
 
 
 ## TODO
- - [ ] Config should go in a YAML file to avoid editing Rust code
-
+ - [X] Config should go in a YAML file to avoid editing Rust code
+ - [ ] Check if there is a possibility to communicate threw TMUX sockets ` lsof -U | grep '^tmux'`
 
 ## Installation 
 
@@ -15,5 +15,11 @@ I wanted to play a bit with Rust term client making
   
   # in your .bash_aliases
   alias tmcr="/path/to/project/tmux-creator/target/release/tmux-creator"
+
+  # setup up config 
+  cd ~/.config
+  mkdir tmux-creator
+  touch config.yml # you can help yourself with config-sample.yml
+  
 ``` 
 
