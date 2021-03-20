@@ -18,3 +18,12 @@ fn read_file(file_name: &str) -> String {
         .unwrap_or_else(|e| panic!("Failed to read config from file {} \n {}", file_name, e))
 }
 
+pub fn parse_list_session_output(data: String) -> Vec<String> {
+    let data: Vec<_> = data.split("\n").collect();
+    data.iter()
+        .map(|session| {
+            let row: Vec<_> = session.split(":").collect();
+            String::from(row[0])
+        })
+        .collect()
+}

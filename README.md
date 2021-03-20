@@ -14,7 +14,7 @@ I wanted to play a bit with Rust term client making
   cargo build --release
   
   # in your .bash_aliases
-  alias tmcr="/path/to/project/tmux-creator/target/release/tmux-creator"
+  alias tmcr="/path/to/project/tmux-creator/target/release/tmux-executor"
 
   # setup up config 
   cd ~/.config
