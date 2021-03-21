@@ -16,7 +16,7 @@ pub fn parse_command() -> Result<(), TmuxExecutorException> {
     let command = args[1].clone();
     match command.as_str() {
         "-l" => list_session(),
-        "-a" => Ok(new_session(&file_name, &args)),
+        "-a" => new_session(&file_name, &args),
         "-r" => list_config_session(&file_name),
         _ => Err(TmuxExecutorException::ParseArgument(command)),
     }
@@ -30,15 +30,16 @@ fn list_config_session(file_name: &str) -> Result<(), TmuxExecutorException> {
 }
 
 fn list_session() -> Result<(), TmuxExecutorException> {
-    if let Ok(sessions) = tmux_lib::list_tmux_session() {
-        let sessions = &sessions.join(", ");
-        Ok(println!("Opened sessions: {}", sessions))
-    } else {
-        Err(TmuxExecutorException::ListSession)
+    match tmux_lib::list_tmux_session() {
+        Ok(sessions) => {
+            let sessions = &sessions.join(", ");
+            Ok(println!("Opened sessions: {}", sessions))
+        }
+        Err(e) => Err(TmuxExecutorException::ListSession(e)),
     }
 }
 
-fn new_session(file_name: &str, args: &[String]) {
+fn new_session(file_name: &str, args: &[String]) -> Result<(), TmuxExecutorException> {
     if args.len() == 1 {
         let configs = tmux_lib::parse_file(file_name).unwrap_or_else(|e| panic!("{}", e.message()));
         let names: Vec<_> = configs
@@ -46,14 +47,14 @@ fn new_session(file_name: &str, args: &[String]) {
             .map(|session| session.get_name().clone())
             .collect();
 
-        println!(
+        return Ok(println!(
             "You must specify a tmux name session. \nSessions: {:?}",
             names
-        );
-        return;
+        ));
     }
     let session_name = args[2].clone();
-    if let Err(e) = tmux_lib::create_tmux_session(session_name.as_str(), file_name) {
-        println!("{}", e.message());
+    match tmux_lib::create_tmux_session(session_name.as_str(), file_name) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(TmuxExecutorException::NewSession(e)),
     }
 }
