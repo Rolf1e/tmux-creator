@@ -16,7 +16,7 @@ pub fn parse_command() -> Result<(), TmuxExecutorException> {
     let command = args[1].clone();
     match command.as_str() {
         "-l" => list_session(),
-        "-a" => Ok(attach_session(&file_name, &args)),
+        "-a" => Ok(new_session(&file_name, &args)),
         "-r" => list_config_session(&file_name),
         _ => Err(TmuxExecutorException::ParseArgument(command)),
     }
@@ -38,7 +38,7 @@ fn list_session() -> Result<(), TmuxExecutorException> {
     }
 }
 
-fn attach_session(file_name: &str, args: &[String]) {
+fn new_session(file_name: &str, args: &[String]) {
     if args.len() == 1 {
         let configs = tmux_lib::parse_file(file_name).unwrap_or_else(|e| panic!("{}", e.message()));
         let names: Vec<_> = configs
@@ -52,7 +52,7 @@ fn attach_session(file_name: &str, args: &[String]) {
         );
         return;
     }
-    let session_name = args[1].clone();
+    let session_name = args[2].clone();
     if let Err(e) = tmux_lib::create_tmux_session(session_name.as_str(), file_name) {
         println!("{}", e.message());
     }
