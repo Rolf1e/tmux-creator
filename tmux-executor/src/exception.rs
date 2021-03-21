@@ -6,6 +6,7 @@ pub enum TmuxExecutorException {
     ListSession(TmuxCreatorException),
     ListConfigSession(TmuxCreatorException),
     NewSession(TmuxCreatorException),
+    KillSession(String, TmuxCreatorException),
 }
 
 impl TmuxExecutorException {
@@ -24,6 +25,13 @@ impl TmuxExecutorException {
             }
             TmuxExecutorException::NewSession(e) => {
                 format!("Failed to create new session. \n {}", e.message())
+            }
+            TmuxExecutorException::KillSession(session_name, e) => {
+                format!(
+                    "Failed to kill session: {}. \n {}",
+                    session_name,
+                    e.message()
+                )
             }
         }
     }

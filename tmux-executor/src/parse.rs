@@ -18,6 +18,7 @@ pub fn parse_command() -> Result<(), TmuxExecutorException> {
         "-l" => list_session(),
         "-a" => new_session(&file_name, &args),
         "-r" => list_config_session(&file_name),
+        "-k" => kill_session(&args),
         _ => Err(TmuxExecutorException::ParseArgument(command)),
     }
 }
@@ -56,5 +57,17 @@ fn new_session(file_name: &str, args: &[String]) -> Result<(), TmuxExecutorExcep
     match tmux_lib::create_tmux_session(session_name.as_str(), file_name) {
         Ok(_) => Ok(()),
         Err(e) => Err(TmuxExecutorException::NewSession(e)),
+    }
+}
+
+fn kill_session(args: &[String]) -> Result<(), TmuxExecutorException> {
+    let session_name = args[2].clone();
+    if let Err(e) = tmux_lib::kill_session(session_name.as_str()) {
+        Err(TmuxExecutorException::KillSession(
+            session_name.to_string(),
+            e,
+        ))
+    } else {
+        Ok(println!("Session {} killed", session_name))
     }
 }

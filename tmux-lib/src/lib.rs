@@ -30,3 +30,8 @@ pub fn list_config_session(
         .map(|session| session.get_name().clone())
         .collect())
 }
+
+pub fn kill_session(session_name: &str) -> Result<(), exception::TmuxCreatorException> {
+    executor::kill_session(session_name)
+}
+

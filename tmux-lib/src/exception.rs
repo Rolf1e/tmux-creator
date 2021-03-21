@@ -1,8 +1,11 @@
+use std::io::Error;
+
 #[derive(Debug)]
 pub enum TmuxCreatorException {
     ReadConfig(String),
     RootPathConfig,
-    ExecuteChild(String),
+    ExecuteChild(String, Error),
+    ReadChild(String),
 }
 
 impl TmuxCreatorException {
@@ -12,8 +15,15 @@ impl TmuxCreatorException {
                 format!("Failed to config from file {}", file_name)
             }
             TmuxCreatorException::RootPathConfig => format!("Failed to resolve root path"),
-            TmuxCreatorException::ExecuteChild(child) => {
-                format!("Failed to create child process : {}", child)
+            TmuxCreatorException::ExecuteChild(child, e) => {
+                format!(
+                    "Failed to create child process : {}, \n {}",
+                    child,
+                    e.to_string()
+                )
+            }
+            TmuxCreatorException::ReadChild(output) => {
+                format!("Failed to read child output {}", output)
             }
         }
     }

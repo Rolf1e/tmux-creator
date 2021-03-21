@@ -7,6 +7,7 @@ const TMUX: &str = "tmux";
 const NEW_SESSION: &str = "new-session";
 const NEW_WINDOW: &str = "new-window";
 const LIST_SESSION: &str = "list-session";
+const KILL_SESSION: &str = "kill-session";
 
 pub fn create_tmux_session(
     session_name: &str,
@@ -27,10 +28,21 @@ pub fn create_tmux_session(
 pub fn list_session() -> Result<Vec<String>, TmuxCreatorException> {
     let mut command = Command::new(TMUX);
     command.arg(LIST_SESSION);
-    if let Ok(output) = command.output() {
-        Ok(read_list_session_child_output(output)?)
+    match command.output() {
+        Ok(output) => Ok(read_list_session_child_output(output)?),
+        Err(e) => Err(TmuxCreatorException::ExecuteChild(LIST_SESSION.to_string(), e))
+    }
+}
+
+pub fn kill_session(session_name: &str) -> Result<(), TmuxCreatorException> {
+    let mut command = Command::new(TMUX);
+    command.arg(KILL_SESSION)
+        .arg("-t")
+        .arg(session_name);
+    if let Err(e) = command.spawn() {
+        Err(TmuxCreatorException::ExecuteChild(KILL_SESSION.to_string(), e))
     } else {
-        Err(TmuxCreatorException::ExecuteChild(LIST_SESSION.to_string()))
+        Ok(())
     }
 }
 
@@ -39,7 +51,7 @@ fn read_list_session_child_output(output: Output) -> Result<Vec<String>, TmuxCre
         let data = String::from_utf8_lossy(&output.stdout).to_string();
         Ok(parser::parse_list_session_output(data))
     } else {
-        Err(TmuxCreatorException::ExecuteChild(LIST_SESSION.to_string()))
+        Err(TmuxCreatorException::ReadChild(LIST_SESSION.to_string()))
     }
 }
 
