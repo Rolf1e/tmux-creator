@@ -19,6 +19,7 @@ pub fn parse_command() -> Result<(), TmuxExecutorException> {
         "-a" => new_session(&file_name, &args),
         "-r" => list_config_session(&file_name),
         "-k" => kill_session(&args),
+        "-h" => Ok(help()),
         _ => Err(TmuxExecutorException::ParseArgument(command)),
     }
 }
@@ -71,3 +72,8 @@ fn kill_session(args: &[String]) -> Result<(), TmuxExecutorException> {
         Ok(println!("Session {} killed", session_name))
     }
 }
+
+fn help() {
+    println!("{}", tmux_lib::help())
+}
+

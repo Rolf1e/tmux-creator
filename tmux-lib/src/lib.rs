@@ -27,7 +27,7 @@ pub fn list_config_session(
     let sessions = parser::parse_file(file_name)?;
     Ok(sessions
         .iter()
-        .map(|session| session.get_name().clone())
+        .map(|session| String::from(session.get_name()))
         .collect())
 }
 
@@ -35,3 +35,14 @@ pub fn kill_session(session_name: &str) -> Result<(), exception::TmuxCreatorExce
     executor::kill_session(session_name)
 }
 
+pub fn help() -> String {
+    String::from("
+    tmcr [command [args]]
+
+    command [args]:
+    -l : list loaded session. 
+    -r : list all sessions available in config.
+    -a {name}: load config from {name}.
+    -k {name}: kill tmux session from {name}.
+        ")
+}
