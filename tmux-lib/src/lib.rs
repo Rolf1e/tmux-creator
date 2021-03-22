@@ -1,14 +1,9 @@
 pub mod config;
 pub mod exception;
+pub mod session;
+
 mod executor;
 mod parser;
-mod session;
-
-pub fn parse_file(
-    file_name: &str,
-) -> Result<Vec<session::TmuxSession>, exception::TmuxCreatorException> {
-    parser::parse_file(file_name)
-}
 
 pub fn create_tmux_session(
     session_name: &str,

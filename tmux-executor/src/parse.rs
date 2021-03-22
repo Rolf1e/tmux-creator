@@ -42,16 +42,16 @@ fn list_session() -> Result<(), TmuxExecutorException> {
 }
 
 fn new_session(file_name: &str, args: &[String]) -> Result<(), TmuxExecutorException> {
-    if args.len() == 1 {
-        let configs = tmux_lib::parse_file(file_name).unwrap_or_else(|e| panic!("{}", e.message()));
-        let names: Vec<_> = configs
-            .into_iter()
-            .map(|session| session.get_name().clone())
-            .collect();
+    if args.len() <= 1 {
+        let configs = tmux_lib::list_config_session(file_name);
+        if let Err(e) = configs {
+            return Err(TmuxExecutorException::ReadConfig(e))
+        }
+        let configs = configs.unwrap();
 
         return Ok(println!(
             "You must specify a tmux name session. \nSessions: {:?}",
-            names
+            configs
         ));
     }
     let session_name = args[2].clone();
