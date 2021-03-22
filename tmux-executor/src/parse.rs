@@ -10,7 +10,7 @@ pub fn parse_command() -> Result<(), TmuxExecutorException> {
 
     let file_name = match config::resolve_home_dir() {
         Ok(home_dir) => format!("{}{}", home_dir, config::DEFAULT_CONFIG_FILE),
-        Err(e) => panic!("{}", e.message()),
+        Err(e) => return Err(TmuxExecutorException::ReadConfig(e)),
     };
 
     let command = args[1].clone();
@@ -76,4 +76,3 @@ fn kill_session(args: &[String]) -> Result<(), TmuxExecutorException> {
 fn help() {
     println!("{}", tmux_lib::help())
 }
-

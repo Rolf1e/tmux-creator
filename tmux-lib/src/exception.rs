@@ -1,20 +1,25 @@
-use std::io::Error;
+use std::io;
 
 #[derive(Debug)]
 pub enum TmuxCreatorException {
-    ReadConfig(String),
+    ReadConfig(String, io::Error),
+    ParseConfig(String, serde_yaml::Error),
     RootPathConfig,
-    ExecuteChild(String, Error),
+    FindSession(String),
+    ExecuteChild(String, io::Error),
     ReadChild(String),
 }
 
 impl TmuxCreatorException {
     pub fn message(&self) -> String {
         match &self {
-            TmuxCreatorException::ReadConfig(file_name) => {
-                format!("Failed to config from file {}", file_name)
+            TmuxCreatorException::ReadConfig(file_name, e) => {
+                format!("Failed to config from file {}. \n {}", file_name, e)
             }
             TmuxCreatorException::RootPathConfig => format!("Failed to resolve root path"),
+            TmuxCreatorException::ParseConfig(file_name, e) => {
+                format!("Failed to parse config from file {}. \n {}", file_name, e)
+            }
             TmuxCreatorException::ExecuteChild(child, e) => {
                 format!(
                     "Failed to create child process : {}, \n {}",
@@ -24,6 +29,9 @@ impl TmuxCreatorException {
             }
             TmuxCreatorException::ReadChild(output) => {
                 format!("Failed to read child output {}", output)
+            }
+            TmuxCreatorException::FindSession(session_name) => {
+                format!("Tmux Session \"{}\" does not exist", session_name)
             }
         }
     }

@@ -13,15 +13,12 @@ pub fn create_tmux_session(
     session_name: &str,
     file_name: &str,
 ) -> Result<(), TmuxCreatorException> {
-    let config_sessions =
-        parser::parse_file(file_name).unwrap_or_else(|e| panic!("{}", e.message()));
+    let config_sessions = parser::parse_file(file_name)?;
+    
     if let Some(session) = find_session(&config_sessions, &session_name) {
         Ok(create_tmux_session_inner(session))
     } else {
-        Err(TmuxCreatorException::ReadConfig(format!(
-            "Tmux Session \"{}\" does not exist",
-            session_name
-        )))
+        Err(TmuxCreatorException::FindSession(session_name.to_string()))
     }
 }
 
@@ -30,17 +27,21 @@ pub fn list_session() -> Result<Vec<String>, TmuxCreatorException> {
     command.arg(LIST_SESSION);
     match command.output() {
         Ok(output) => Ok(read_list_session_child_output(output)?),
-        Err(e) => Err(TmuxCreatorException::ExecuteChild(LIST_SESSION.to_string(), e))
+        Err(e) => Err(TmuxCreatorException::ExecuteChild(
+            LIST_SESSION.to_string(),
+            e,
+        )),
     }
 }
 
 pub fn kill_session(session_name: &str) -> Result<(), TmuxCreatorException> {
     let mut command = Command::new(TMUX);
-    command.arg(KILL_SESSION)
-        .arg("-t")
-        .arg(session_name);
+    command.arg(KILL_SESSION).arg("-t").arg(session_name);
     if let Err(e) = command.spawn() {
-        Err(TmuxCreatorException::ExecuteChild(KILL_SESSION.to_string(), e))
+        Err(TmuxCreatorException::ExecuteChild(
+            KILL_SESSION.to_string(),
+            e,
+        ))
     } else {
         Ok(())
     }
@@ -100,4 +101,3 @@ fn find_session<'a>(sessions: &'a [TmuxSession], session_name: &str) -> Option<&
         .iter()
         .find(|session| session.get_name() == session_name)
 }
-

@@ -3,6 +3,7 @@ use tmux_lib::exception::TmuxCreatorException;
 pub enum TmuxExecutorException {
     ParseArgument(String),
     Empty,
+    ReadConfig(TmuxCreatorException),
     ListSession(TmuxCreatorException),
     ListConfigSession(TmuxCreatorException),
     NewSession(TmuxCreatorException),
@@ -34,6 +35,9 @@ impl TmuxExecutorException {
                     session_name,
                     e.message()
                 )
+            }
+            TmuxExecutorException::ReadConfig(e) => {
+                format!("Failed to read config file. \n {}", e.message())
             }
         }
     }

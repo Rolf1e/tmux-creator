@@ -1,0 +1,12 @@
+-
+  name: test-session 
+  working_directory: /home
+  enter_command: nvim
+  window_name: vim
+  windows:
+    - name: rust
+      session_name: test-session
+      working_directory: /home
+
+
+

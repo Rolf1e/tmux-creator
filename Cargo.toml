@@ -3,5 +3,7 @@
 members = [
     "tmux-lib",
     "tmux-executor",
+    "neovim-plugin",
+    "tests",
 ]
 
