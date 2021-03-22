@@ -1,7 +1,5 @@
 extern crate neovim_lib; 
-
-mod event;
-mod messages;
+use tmux_lib::event;
 
 fn main() {
     let neovim = event::create_neovim();

@@ -1,6 +1,8 @@
 pub mod config;
 pub mod exception;
 pub mod session;
+pub mod messages;
+pub mod event;
 
 mod executor;
 mod parser;

@@ -1,3 +1,4 @@
+use tmux_lib::event::EventHandler;
 
 #[test]
 fn should_interprete_neovim_event() {
