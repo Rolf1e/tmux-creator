@@ -1,27 +1,35 @@
 #[cfg(test)]
 mod test_application {
+    use std::{thread, time};
     use tmux_lib;
 
     #[test]
     fn should_create_session_and_kill_session() {
         let session = "test-session";
         if let Err(e) = tmux_lib::create_tmux_session(session, "./config_test.yml") {
-            eprintln!("{}", e.message());
+            eprintln!("Failed to create session: {}\n {}", session, e.message());
             assert!(false);
         } else {
+            //  We wait one second so we are sure that creating session is done
+            thread::sleep(time::Duration::from_secs(1));
             match tmux_lib::list_tmux_session() {
-                Ok(session_names) => assert!(session_names.contains(&String::from(session))),
+                Ok(session_names) => {
+                    assert!(session_names.contains(&String::from(session)));
+                }
                 Err(_) => assert!(false),
             }
         }
 
         // kill session at this end
         if let Err(e) = tmux_lib::kill_session(session) {
-            eprintln!("{}", e.message());
+            eprintln!("Failed to kill {}.\n {}", session,  e.message());
             assert!(false);
         } else {
+            //We wait one second so we are sure that killing session is done
+            thread::sleep(time::Duration::from_secs(1));
             match tmux_lib::list_tmux_session() {
                 Ok(session_names) => {
+                    eprintln!("{:?}", session_names);
                     assert!(!session_names.contains(&String::from(session)));
                 }
                 Err(_) => assert!(false),

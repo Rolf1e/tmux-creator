@@ -1,8 +1,7 @@
 pub mod config;
 pub mod exception;
 pub mod session;
-pub mod messages;
-pub mod event;
+pub mod neovim;
 
 mod executor;
 mod parser;
