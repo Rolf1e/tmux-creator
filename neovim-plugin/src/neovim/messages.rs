@@ -1,14 +1,14 @@
 pub enum Message {
     Unknow(String),
     ListSessions,
-    Hello,
+    RegisteredSessions,
 }
 
 impl From<String> for Message {
     fn from(event: String) -> Self {
         match &event[..] {
-            "hello" => Message::Hello,
             "list" => Message::ListSessions,
+            "registered" => Message::RegisteredSessions,
             _ => Message::Unknow(event),
         }
     }

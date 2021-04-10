@@ -3,7 +3,7 @@ if !exists('g:tmuxCreatorJobId')
 endif
 
 let s:ListSession = 'list'
-let s:Hello = 'hello'
+let s:RegisteredListSession = 'registered'
 
 let s:tmux_creator_path_bin = '/media/rolfie/ssd2/projects/tmux-creator/target/release/neovim-plugin'
 
@@ -31,16 +31,17 @@ function! s:initRpc()
 endfunction
 
 function! s:configureCommands()
-  command! -nargs=0 Hello :call s:helloWorld()
+  command! -nargs=0 RegisteredSession :call s:registeredListSession()
   command! -nargs=0 ListSession :call s:listSession()
 endfunction
 
-function! s:helloWorld()
-  call rpcnotify(s:tmuxCreatorJobId, s:Hello)
-endfunction
 
 function! s:listSession()
   call rpcnotify(s:tmuxCreatorJobId, s:ListSession)
+endfunction
+
+function! s:registeredListSession()
+  call rpcnotify(s:tmuxCreatorJobId, s:RegisteredListSession)
 endfunction
 
 call s:connect()
