@@ -42,7 +42,6 @@ impl EventHandler {
     }
 }
 
-
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 
@@ -62,6 +61,7 @@ fn interprete_event(event: String, _values: Vec<Value>) -> Result<Command, Neovi
     match Message::from(event) {
         Message::Unknow(message) => Err(NeovimException::UnknowMessage(message)),
         Message::ListSessions => list_session(),
+        Message::Hello => Ok(Command::Echo(String::from("Hello World"))),
     }
 }
 
@@ -69,7 +69,7 @@ fn list_session() -> Result<Command, NeovimException> {
     match crate::list_tmux_session() {
         Ok(sessions) => {
             let sessions = &sessions.join(", ");
-            Ok(Command::Echo(sessions.clone()))
+            Ok(Command::Echo(format!("Open TMUX-Sessions: {}", sessions)))
         }
         Err(_) => Err(NeovimException::ListSessions),
     }

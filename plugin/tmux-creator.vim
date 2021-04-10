@@ -1,6 +1,9 @@
-if !exists('s:tmuxCreatorJobId')
-	let s:tmuxCreatorJobId= 0
+if !exists('g:tmuxCreatorJobId')
+	let s:tmuxCreatorJobId = 0
 endif
+
+let s:ListSession = 'list'
+let s:Hello = 'hello'
 
 let s:tmux_creator_path_bin = '/media/rolfie/ssd2/projects/tmux-creator/target/release/neovim-plugin'
 
@@ -13,6 +16,7 @@ function! s:connect()
     echoerr "Tmux Creator: rpc process is not executable"
   else
     let s:tmuxCreatorJobId = id 
+    echo "Tmux Creator: Start process with id " . s:tmuxCreatorJobId
     call s:configureCommands() 
   endif
 endfunction
@@ -27,13 +31,16 @@ function! s:initRpc()
 endfunction
 
 function! s:configureCommands()
+  command! -nargs=0 Hello :call s:helloWorld()
   command! -nargs=0 ListSession :call s:listSession()
 endfunction
 
-let s:ListSession = 'list'
+function! s:helloWorld()
+  call rpcnotify(s:tmuxCreatorJobId, s:Hello)
+endfunction
 
 function! s:listSession()
-  call rpcrequest(s:tmuxCreatorJobId, s:ListSession)
+  call rpcnotify(s:tmuxCreatorJobId, s:ListSession)
 endfunction
 
 call s:connect()
