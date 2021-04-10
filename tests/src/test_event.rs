@@ -3,9 +3,9 @@ pub mod test_event {
 
     use neovim_lib::Value;
     use std::sync::mpsc;
-    use tmux_lib::neovim::command;
-    use tmux_lib::neovim::event;
-    use tmux_lib::neovim::exception;
+    use neovim_plugin::neovim::command;
+    use neovim_plugin::neovim::event;
+    use neovim_plugin::neovim::exception;
 
     pub struct TestCommandExecutorKnownMessage {}
 

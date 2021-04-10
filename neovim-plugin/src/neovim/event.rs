@@ -2,6 +2,7 @@ use crate::neovim::command::{Command, CommandExecutor};
 use crate::neovim::exception::NeovimException;
 use crate::neovim::messages::Message;
 use neovim_lib::{Neovim, Session, Value};
+use tmux_lib;
 
 pub fn create_neovim() -> Neovim {
     match Session::new_parent() {
@@ -66,7 +67,7 @@ fn interprete_event(event: String, _values: Vec<Value>) -> Result<Command, Neovi
 }
 
 fn list_session() -> Result<Command, NeovimException> {
-    match crate::list_tmux_session() {
+    match tmux_lib::list_tmux_session() {
         Ok(sessions) => {
             let sessions = &sessions.join(", ");
             Ok(Command::Echo(format!("Open TMUX-Sessions: {}", sessions)))

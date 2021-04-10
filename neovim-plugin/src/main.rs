@@ -1,6 +1,10 @@
 extern crate neovim_lib;
-use tmux_lib::neovim::command::NeovimCommandExecutor;
-use tmux_lib::neovim::event;
+
+pub mod neovim;
+
+use crate::neovim::command::NeovimCommandExecutor;
+use crate::neovim::event;
+
 
 fn main() {
     let neovim = event::create_neovim();

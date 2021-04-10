@@ -8,5 +8,6 @@ edition = "2018"
 
 [dependencies]
 tmux-lib = { path = "../tmux-lib" }
+neovim-plugin = { path = "../neovim-plugin" }
 neovim-lib = "0.6.1"
 mock_derive = "0.8.0"
