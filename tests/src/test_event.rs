@@ -2,6 +2,7 @@
 pub mod test_event {
 
     use neovim_lib::Value;
+    use std::sync::mpsc;
     use tmux_lib::neovim::command;
     use tmux_lib::neovim::event;
     use tmux_lib::neovim::exception;
@@ -9,8 +10,12 @@ pub mod test_event {
     pub struct TestCommandExecutorKnownMessage {}
 
     impl command::CommandExecutor for TestCommandExecutorKnownMessage {
-        fn receive_from_neovim(&mut self) -> Vec<(String, Vec<Value>)> {
-            vec![(String::from("list-session"), Vec::new())]
+        fn receive_from_neovim(&mut self) -> mpsc::Receiver<(String, Vec<Value>)> {
+            let (sender, receiver) = mpsc::channel();
+            sender
+                .send((String::from("list-session"), Vec::new()))
+                .unwrap();
+            receiver
         }
 
         fn send_to_neovim(&mut self, _command: &str) -> Result<(), exception::NeovimException> {
@@ -33,8 +38,12 @@ pub mod test_event {
     pub struct TestCommandExecutorUnKnownMessage {}
 
     impl command::CommandExecutor for TestCommandExecutorUnKnownMessage {
-        fn receive_from_neovim(&mut self) -> Vec<(String, Vec<Value>)> {
-            vec![(String::from("list-session"), Vec::new())]
+        fn receive_from_neovim(&mut self) -> mpsc::Receiver<(String, Vec<Value>)> {
+            let (sender, receiver) = mpsc::channel();
+            sender
+                .send((String::from("list-session"), Vec::new()))
+                .unwrap();
+            receiver
         }
 
         fn send_to_neovim(&mut self, _command: &str) -> Result<(), exception::NeovimException> {

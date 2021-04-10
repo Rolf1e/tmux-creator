@@ -42,10 +42,26 @@ impl EventHandler {
     }
 }
 
+use std::fs::OpenOptions;
+use std::io::prelude::*;
+
+pub fn write_into_file(file_name: &str, to_write: &str) {
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open(file_name)
+        .unwrap();
+
+    if let Err(e) = writeln!(file, "{}", to_write) {
+        eprintln!("Couldn't write to file: {}", e);
+    }
+}
+
 fn interprete_event(event: String, _values: Vec<Value>) -> Result<Command, NeovimException> {
     match Message::from(event) {
         Message::Unknow(message) => Err(NeovimException::UnknowMessage(message)),
         Message::ListSessions => list_session(),
+        Message::Hello => Ok(Command::Echo(String::from("Hello World"))),
     }
 }
 
@@ -53,7 +69,7 @@ fn list_session() -> Result<Command, NeovimException> {
     match crate::list_tmux_session() {
         Ok(sessions) => {
             let sessions = &sessions.join(", ");
-            Ok(Command::Echo(sessions.clone()))
+            Ok(Command::Echo(format!("Open TMUX-Sessions: {}", sessions)))
         }
         Err(_) => Err(NeovimException::ListSessions),
     }
