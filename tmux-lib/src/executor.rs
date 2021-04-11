@@ -16,7 +16,8 @@ pub fn create_tmux_session(
     let config_sessions = parser::parse_file(file_name)?;
     
     if let Some(session) = find_session(&config_sessions, &session_name) {
-        Ok(create_tmux_session_inner(session))
+        create_tmux_session_inner(session);
+        Ok(())
     } else {
         Err(TmuxCreatorException::FindSession(session_name.to_string()))
     }
@@ -69,7 +70,7 @@ fn create_tmux_session_inner(tmux_session: &TmuxSession) {
     if let Some(cmd) = &tmux_session.get_enter_command() {
         command.arg("-d").arg(cmd.as_str());
     }
-    if let Err(_) = command.spawn() {
+    if command.spawn().is_err() {
         println!(
             "Failed to create tmux session \"{}\"",
             tmux_session.get_name()
@@ -79,7 +80,7 @@ fn create_tmux_session_inner(tmux_session: &TmuxSession) {
     for window in tmux_session.get_windows() {
         let mut command = Command::new(TMUX);
         create_tmux_window(&mut command, window);
-        if let Err(_) = command.spawn() {
+        if command.spawn().is_err() {
             println!("Failed to create tmux window \"{}\"", window.get_name());
         }
     }

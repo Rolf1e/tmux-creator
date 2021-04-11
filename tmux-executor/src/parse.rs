@@ -19,14 +19,20 @@ pub fn parse_command() -> Result<(), TmuxExecutorException> {
         "-a" => new_session(&file_name, &args),
         "-r" => list_config_session(&file_name),
         "-k" => kill_session(&args),
-        "-h" => Ok(help()),
+        "-h" => {
+            help();
+            Ok(())
+        }
         _ => Err(TmuxExecutorException::ParseArgument(command)),
     }
 }
 
 fn list_config_session(file_name: &str) -> Result<(), TmuxExecutorException> {
     match tmux_lib::list_config_session(file_name) {
-        Ok(sessions) => Ok(println!("{}", sessions.join(", "))),
+        Ok(sessions) => {
+            println!("{}", sessions.join(", "));
+            Ok(())
+        }
         Err(e) => Err(TmuxExecutorException::ListConfigSession(e)),
     }
 }
@@ -35,7 +41,8 @@ fn list_session() -> Result<(), TmuxExecutorException> {
     match tmux_lib::list_tmux_session() {
         Ok(sessions) => {
             let sessions = &sessions.join(", ");
-            Ok(println!("Opened sessions: {}", sessions))
+            println!("Opened sessions: {}", sessions);
+            Ok(())
         }
         Err(e) => Err(TmuxExecutorException::ListSession(e)),
     }
@@ -45,14 +52,14 @@ fn new_session(file_name: &str, args: &[String]) -> Result<(), TmuxExecutorExcep
     if args.len() <= 1 {
         let configs = tmux_lib::list_config_session(file_name);
         if let Err(e) = configs {
-            return Err(TmuxExecutorException::ReadConfig(e))
+            return Err(TmuxExecutorException::ReadConfig(e));
         }
         let configs = configs.unwrap();
-
-        return Ok(println!(
+        println!(
             "You must specify a tmux name session. \nSessions: {:?}",
             configs
-        ));
+        );
+        return Ok(());
     }
     let session_name = args[2].clone();
     match tmux_lib::create_tmux_session(session_name.as_str(), file_name) {
@@ -69,7 +76,8 @@ fn kill_session(args: &[String]) -> Result<(), TmuxExecutorException> {
             e,
         ))
     } else {
-        Ok(println!("Session {} killed", session_name))
+        println!("Session {} killed", session_name);
+        Ok(())
     }
 }
 

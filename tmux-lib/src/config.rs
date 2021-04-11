@@ -1,5 +1,4 @@
 use crate::exception::TmuxCreatorException;
-use home;
 use std::path::Path;
 
 pub const DEFAULT_CONFIG_FILE: &str = "/.config/tmux-creator/config.yml";

@@ -1,5 +1,4 @@
 use neovim_lib::CallError;
-use tmux_lib;
 
 pub enum NeovimException {
     UnknowMessage(String),

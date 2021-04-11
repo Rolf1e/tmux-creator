@@ -3,7 +3,6 @@ use crate::neovim::exception::NeovimException;
 use crate::neovim::messages::Message;
 use neovim_lib::{Neovim, Session, Value};
 use tmux_lib::config;
-use tmux_lib;
 
 pub fn create_neovim() -> Neovim {
     match Session::new_parent() {

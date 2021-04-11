@@ -23,10 +23,10 @@ fn read_file(file_name: &str) -> Result<String, TmuxCreatorException> {
 }
 
 pub fn parse_list_session_output(data: String) -> Vec<String> {
-    let data: Vec<_> = data.split("\n").collect();
+    let data: Vec<_> = data.split('\n').collect();
     data.iter()
         .map(|session| {
-            let row: Vec<_> = session.split(":").collect();
+            let row: Vec<_> = session.split(':').collect();
             String::from(row[0])
         })
         .collect()

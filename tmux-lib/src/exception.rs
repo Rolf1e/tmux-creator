@@ -16,7 +16,7 @@ impl TmuxCreatorException {
             TmuxCreatorException::ReadConfig(file_name, e) => {
                 format!("Failed to config from file {}. \n {}", file_name, e)
             }
-            TmuxCreatorException::RootPathConfig => format!("Failed to resolve root path"),
+            TmuxCreatorException::RootPathConfig => String::from("Failed to resolve root path"),
             TmuxCreatorException::ParseConfig(file_name, e) => {
                 format!("Failed to parse config from file {}. \n {}", file_name, e)
             }
