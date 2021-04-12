@@ -12,6 +12,7 @@ pub trait CommandExecutor {
 
 pub enum Command {
     Echo(String),
+    Error(NeovimException),
 }
 
 pub struct NeovimCommandExecutor {
@@ -45,6 +46,7 @@ impl Command {
     pub fn get(&self) -> String {
         match &self {
             Command::Echo(cmd) => format!("echo \"{}\"", cmd),
+            Command::Error(e) => format!("echo \"{}\"", e.message()),
         }
     }
 }

@@ -2,24 +2,15 @@ use crate::logger::exception::LoggerException;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 
-pub trait LoggerOutpout {
+pub trait OutputHandler {
     fn write(&self, message: &str) -> Result<(), LoggerException>;
 }
-
-pub struct StandartOutput {}
 
 pub struct FileLoggerOutput {
     file_name: String,
 }
 
-impl LoggerOutpout for StandartOutput {
-    fn write(&self, message: &str) -> Result<(), LoggerException> {
-        println!("{}", message);
-        Ok(())
-    }
-}
-
-impl LoggerOutpout for FileLoggerOutput {
+impl OutputHandler for FileLoggerOutput {
     fn write(&self, message: &str) -> Result<(), LoggerException> {
         let mut file = OpenOptions::new()
             .append(true)
@@ -32,5 +23,11 @@ impl LoggerOutpout for FileLoggerOutput {
         } else {
             Ok(())
         }
+    }
+}
+
+impl FileLoggerOutput {
+    pub fn new(file_name: String) -> Self {
+        FileLoggerOutput { file_name } 
     }
 }

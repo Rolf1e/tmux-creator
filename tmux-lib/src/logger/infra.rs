@@ -1,8 +1,27 @@
-pub struct LoggerBuilder {
-    level: LoggerLevel,
-}
+use crate::logger::output::OutputHandler;
 
 pub struct Logger {
+    formatter: Formatter,
+    output: Box<dyn OutputHandler>,
+}
+
+impl Logger {
+    pub fn new(level: LoggerLevel, output: Box<dyn OutputHandler>) -> Self {
+        Logger {
+            formatter: Formatter { level },
+            output,
+        }
+    }
+
+    pub fn log(&self, message: &str) {
+        let message = self.formatter.format(message);
+        self.output
+            .write(&message)
+            .unwrap_or_else(|e| panic!("Failed to log information in output. \n {}", e.message()))
+    }
+}
+
+struct Formatter {
     level: LoggerLevel,
 }
 
@@ -10,8 +29,6 @@ pub struct Logger {
 pub enum LoggerLevel {
     Info,
     Error,
-    Warning,
-    Debug,
 }
 
 impl LoggerLevel {
@@ -19,8 +36,6 @@ impl LoggerLevel {
         match self {
             LoggerLevel::Info => self.message("INFO"),
             LoggerLevel::Error => self.message("ERROR"),
-            LoggerLevel::Warning => self.message("WARN"),
-            LoggerLevel::Debug => self.message("DEBUG"),
         }
     }
 
@@ -29,65 +44,32 @@ impl LoggerLevel {
     }
 }
 
-impl Logger {
-    pub fn new(level: LoggerLevel) -> Self {
-        Logger { level }
-    }
-
-    pub fn log(&self, message: &str) -> String {
+impl Formatter {
+    pub fn format(&self, message: &str) -> String {
         format!("{}{}", self.level.header(), message)
     }
 }
 
-impl LoggerBuilder {
-    pub fn builder() -> Self {
-        LoggerBuilder {
-            level: LoggerLevel::Info,
-        }
-    }
-
-    pub fn level(&mut self, level: LoggerLevel) -> &mut Self {
-        self.level = level;
-        self
-    }
-
-    pub fn build(&mut self) -> Logger {
-        Logger { level: self.level }
-    }
+// implementation tests could be removed
+#[test]
+fn test_info_level() {
+    let formatter = Formatter {
+        level: LoggerLevel::Info,
+    };
+    assert_eq!(
+        "INFO - log at info level",
+        formatter.format("log at info level")
+    );
 }
 
-#[cfg(test)]
-pub mod logger_test {
-
-    use super::{Logger, LoggerLevel};
-
-    #[test]
-    fn test_info_level() {
-        let logger = Logger::new(LoggerLevel::Info);
-        assert_eq!("INFO - log at info level", logger.log("log at info level"));
-    }
-
-    #[test]
-    fn test_error_level() {
-        let logger = Logger::new(LoggerLevel::Error);
-        assert_eq!(
-            "ERROR - log at error level",
-            logger.log("log at error level")
-        );
-    }
-
-    #[test]
-    fn test_warning_level() {
-        let logger = Logger::new(LoggerLevel::Warning);
-        assert_eq!("WARN - log at warn level", logger.log("log at warn level"));
-    }
-
-    #[test]
-    fn test_debug_level() {
-        let logger = Logger::new(LoggerLevel::Debug);
-        assert_eq!(
-            "DEBUG - log at debug level",
-            logger.log("log at debug level")
-        );
-    }
+#[test]
+fn test_error_level() {
+    let formatter = Formatter {
+        level: LoggerLevel::Error,
+    };
+    assert_eq!(
+        "ERROR - log at error level",
+        formatter.format("log at error level")
+    );
 }
+
