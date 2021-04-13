@@ -4,6 +4,8 @@ endif
 
 let s:ListSession = 'list'
 let s:RegisteredListSession = 'registered'
+let s:LaunchSession = 'launch'
+let s:KillSession = 'kill'
 
 let s:tmux_creator_path_bin = '/media/rolfie/ssd2/projects/tmux-creator/target/release/neovim-plugin'
 
@@ -31,17 +33,33 @@ function! s:initRpc()
 endfunction
 
 function! s:configureCommands()
+  command! -nargs=+ LaunchSession :call s:launchSession(<f-args>)
+  command! -nargs=+ KillSession :call s:killSession(<f-args>)
   command! -nargs=0 RegisteredSession :call s:registeredListSession()
   command! -nargs=0 ListSession :call s:listSession()
 endfunction
 
-
 function! s:listSession()
-  call rpcnotify(s:tmuxCreatorJobId, s:ListSession)
+  call s:rpcMessage(s:ListSession)
 endfunction
 
 function! s:registeredListSession()
-  call rpcnotify(s:tmuxCreatorJobId, s:RegisteredListSession)
+  call s:rpcMessage(s:RegisteredSession)
+endfunction
+
+function! s:launchSession(...)
+  let s:session_name = get(a:, 1, 0)
+  call rpcnotify(s:tmuxCreatorJobId, s:LaunchSession, s:session_name)
+endfunction
+
+function! s:killSession(...)
+  let s:session_name = get(a:, 1, 0)
+  call rpcnotify(s:tmuxCreatorJobId, s:KillSession, s:session_name)
+endfunction
+
+function! s:rpcMessage(...) 
+  let s:message = get(a:, 1, 0)
+  call rpcnotify(s:tmuxCreatorJobId, s:message)
 endfunction
 
 call s:connect()

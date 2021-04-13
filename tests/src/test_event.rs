@@ -5,8 +5,8 @@ pub mod test_event {
     use std::sync::mpsc;
     use neovim_plugin::neovim::command;
     use neovim_plugin::neovim::event;
+    use neovim_plugin::neovim::event_handler;
     use neovim_plugin::neovim::exception;
-    use tmux_lib::logger;
 
     pub struct TestCommandExecutorKnownMessage {}
 
@@ -27,8 +27,7 @@ pub mod test_event {
     #[test]
     fn should_interprete_neovim_event() {
         let command_executor = TestCommandExecutorKnownMessage {};
-        let logger = logger::init("./fake.txt".to_string());
-        let mut event_handler = event::EventHandler::new(Box::new(command_executor), logger);
+        let mut event_handler = event_handler::EventHandler::new(Box::new(command_executor));
         if let Err(e) = event_handler.recv() {
             eprintln!("Stack trace: {}", e.message());
             assert!(false);
@@ -57,8 +56,7 @@ pub mod test_event {
     #[test]
     fn should_not_interprete_neovim_event() {
         let command_executor = TestCommandExecutorUnKnownMessage {};
-        let logger = logger::init("./fake.txt".to_string());
-        let mut event_handler = event::EventHandler::new(Box::new(command_executor), logger);
+        let mut event_handler = event_handler::EventHandler::new(Box::new(command_executor));
         if let Err(e) = event_handler.recv() {
             assert_eq!(
                 "Received an unknow event \"bad message\" from Neovim",
