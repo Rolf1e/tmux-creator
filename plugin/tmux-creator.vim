@@ -44,7 +44,7 @@ function! s:listSession()
 endfunction
 
 function! s:registeredListSession()
-  call s:rpcMessage(s:RegisteredSession)
+  call s:rpcMessage(s:RegisteredListSession)
 endfunction
 
 function! s:launchSession(...)
