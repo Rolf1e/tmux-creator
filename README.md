@@ -3,7 +3,6 @@ I wanted to play a bit with Rust term client making
 
 
 ## TODO
- - [X] Config should go in a YAML file to avoid editing Rust code
  - [ ] Check if there is a possibility to communicate threw TMUX sockets ` lsof -U | grep '^tmux'`
 
 ## Installation 
