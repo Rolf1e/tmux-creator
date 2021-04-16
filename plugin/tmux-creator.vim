@@ -46,7 +46,7 @@ endfunction
 function! s:rpcMessageOneParameter(...) 
   let s:message = get(a:, 1, 0)
   let s:session_name = get(a:, 2, 0)
-  call rpcnotify(s:tmuxCreatorJobId, s:message, s:session_name)
+  call rpcrequest(s:tmuxCreatorJobId, s:message, s:session_name)
 endfunction
 
 " function! s:popupWindow(...) abort
