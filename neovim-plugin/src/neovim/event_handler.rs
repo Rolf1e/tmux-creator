@@ -2,8 +2,9 @@ use crate::neovim::command::{Command, CommandExecutor};
 use crate::neovim::event::Event;
 use crate::neovim::exception::NeovimException;
 use crate::neovim::messages::Message;
-use neovim_lib::{Neovim, Session, Value};
+use nvim_rs::{Neovim, Value};
 use tmux_lib::logger;
+use tokio::io::Stdout;
 
 pub fn create_neovim() -> Neovim {
     match Session::new_parent() {

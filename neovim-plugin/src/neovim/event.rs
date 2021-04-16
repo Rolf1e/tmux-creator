@@ -61,8 +61,7 @@ fn list_registered_sessions() -> Result<Command, NeovimException> {
 fn list_session() -> Result<Command, NeovimException> {
     match tmux_lib::list_tmux_session() {
         Ok(sessions) => {
-            let sessions = &sessions.join(", ");
-            Ok(Command::Echo(format!("Opened TMUX-Sessions: {}", sessions)))
+            Ok(Command::PopUpInWindow(sessions))
         }
         Err(e) => Err(NeovimException::ListSessions(e)),
     }
