@@ -1,7 +1,5 @@
 use tmux_lib::config;
-
-use crate::neovim::command::Command;
-use crate::neovim::exception::NeovimException;
+use crate::exception::NeovimException;
 
 pub enum Event {
     ListSessions,
@@ -10,8 +8,9 @@ pub enum Event {
     KillSession(String),
 }
 
+
 impl Event {
-    pub fn command(&self) -> Result<Command, NeovimException> {
+    pub fn execute(&self) -> Result<String, NeovimException> {
         match &self {
             Event::ListSessions => list_session(),
             Event::RegisteredSessions => list_registered_sessions(),
@@ -21,15 +20,15 @@ impl Event {
     }
 }
 
-fn kill_session(session_name: &str) -> Result<Command, NeovimException> {
+fn kill_session(session_name: &str) -> Result<String, NeovimException> {
     match tmux_lib::kill_session(session_name) {
-        Ok(()) => Ok(Command::Echo(format!("Killed {} sesssion", session_name))),
+        Ok(()) => Ok(format!("Killed {} sesssion", session_name)),
         Err(e) => Err(NeovimException::KillSession(session_name.to_string(), e)),
     }
 }
 
 
-fn launch_session(session_name: &str) -> Result<Command, NeovimException> {
+fn launch_session(session_name: &str) -> Result<String, NeovimException> {
     let file_name = match config::resolve_home_dir() {
         Ok(home_dir) => format!("{}{}", home_dir, config::DEFAULT_CONFIG_FILE),
         Err(e) => return Err(NeovimException::ReadConfig(e)),
@@ -37,11 +36,11 @@ fn launch_session(session_name: &str) -> Result<Command, NeovimException> {
     if let Err(e) = tmux_lib::create_tmux_session(session_name, &file_name) {
         Err(NeovimException::ReadConfig(e))
     } else {
-        Ok(Command::Echo(format!("Launch {} session", session_name)))
+        Ok(format!("Launch {} session", session_name))
     }
 }
 
-fn list_registered_sessions() -> Result<Command, NeovimException> {
+fn list_registered_sessions() -> Result<String, NeovimException> {
     let file_name = match config::resolve_home_dir() {
         Ok(home_dir) => format!("{}{}", home_dir, config::DEFAULT_CONFIG_FILE),
         Err(e) => return Err(NeovimException::ReadConfig(e)),
@@ -49,19 +48,20 @@ fn list_registered_sessions() -> Result<Command, NeovimException> {
     match tmux_lib::list_config_session(&file_name) {
         Ok(sessions) => {
             let sessions = &sessions.join(", ");
-            Ok(Command::Echo(format!(
+            Ok(format!(
                 "Registered TMUX-Sessions: {}",
                 sessions
-            )))
+            ))
         }
         Err(e) => Err(NeovimException::RegisteredListSessions(e)),
     }
 }
 
-fn list_session() -> Result<Command, NeovimException> {
+fn list_session() -> Result<String, NeovimException> {
     match tmux_lib::list_tmux_session() {
         Ok(sessions) => {
-            Ok(Command::PopUpInWindow(sessions))
+            let sessions = &sessions.join(", ");
+            Ok(format!("Opened TMUX-Sessions: {}", sessions))
         }
         Err(e) => Err(NeovimException::ListSessions(e)),
     }

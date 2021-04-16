@@ -7,8 +7,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# neovim-lib = "0.6.1"
-nvim-rs = "0.2.0"
 tmux-lib = { path = "../tmux-lib" }
-tokio = { version = "1.1.1", features = ["full"] }
-tokio-util = "0.6.6"
+async-trait = "0.1.22"
+tokio-util = { version = "0.6.3", features = ["compat"], optional = true }
+futures = "0.3.12"
+nvim-rs = { version = "0.2", features = ["use_tokio"] }
+tokio = { version = "0.2.8", features = ["full"] }

@@ -40,7 +40,7 @@ endfunction
 
 function! s:rpcMessage(...) 
   let s:message = get(a:, 1, 0)
-  call rpcnotify(s:tmuxCreatorJobId, s:message)
+  echo rpcrequest(s:tmuxCreatorJobId, s:message)
 endfunction
 
 function! s:rpcMessageOneParameter(...) 

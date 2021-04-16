@@ -1,16 +1,16 @@
-extern crate neovim_lib;
 
-pub mod neovim;
+mod event_handler;
+mod event;
+mod messages;
+mod exception;
 
-use crate::neovim::command::NeovimCommandExecutor;
-use crate::neovim::event_handler;
-
-
-fn main() {
-    let neovim = event_handler::create_neovim();
-    let command_executor = NeovimCommandExecutor::new(neovim);
-    let mut event_handler = event_handler::EventHandler::new(Box::new(command_executor));
-    event_handler
-        .recv()
-        .unwrap_or_else(|e| panic!("{:?}", e.message()));
+#[tokio::main]
+async fn main() {
+    let (neovim, io_handler) = event_handler::build_neovim().await;
+    match io_handler.await {
+        Err(joinerr) => eprintln!("Error joining IO loop: '{}'", joinerr),
+        Ok(Err(err)) => {}
+        Ok(Ok(())) => {}
+    }
+    
 }
