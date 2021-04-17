@@ -8,19 +8,21 @@ use crate::messages::Message;
 pub struct EventHandler;
 
 impl EventHandler {
-    pub fn new() -> Self {
+    fn new() -> Self {
         EventHandler
     }
 
-    pub fn handle_event(
-        &self,
-        event: String,
-        values: Vec<nvim_rs::Value>,
-    ) -> EventResponse {
+    pub fn handle_event(&self, event: String, values: Vec<nvim_rs::Value>) -> EventResponse {
         match interprete_event(event, values) {
             Ok(event) => event.execute(),
             Err(e) => EventResponse::Exception(e),
         }
+    }
+}
+
+impl Default for EventHandler {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -38,19 +40,21 @@ fn extract_one_parameter(values: Vec<nvim_rs::Value>) -> Result<String, NeovimEx
     let mut values = values.iter();
 
     let value = values.next();
-    let session_name = if value.is_none() {
-        return Err(NeovimException::LaunchSession(String::from(
-            "You need to provide a session name",
-        )));
-    } else {
-        value.unwrap().as_str()
+    let session_name = match value {
+        Some(session_name) => session_name.as_str(),
+        None => {
+            return Err(NeovimException::LaunchSession(String::from(
+                "You need to provide a session name",
+            )))
+        }
     };
-    if session_name.is_none() {
-        let message = format!("Can not parse session name from {:?}", value);
-        logger::error(&message);
-        Err(NeovimException::LaunchSession(message))
-    } else {
-        let session_name = session_name.unwrap();
-        Ok(String::from(session_name))
+
+    match session_name {
+        Some(session_name) => Ok(String::from(session_name)),
+        None => {
+            let message = format!("Can not parse session name from {:?}", value);
+            logger::error(&message);
+            Err(NeovimException::LaunchSession(message))
+        }
     }
 }

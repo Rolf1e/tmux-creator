@@ -22,7 +22,7 @@ struct NeovimHandler {
 impl NeovimHandler {
     fn new() -> Self {
         NeovimHandler {
-            event_handler: EventHandler::new(),
+            event_handler: EventHandler::default(),
         }
     }
 }
