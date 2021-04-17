@@ -5,7 +5,6 @@ pub enum NeovimException {
     KillSession(String, tmux_lib::exception::TmuxCreatorException),
     LaunchSession(String),
     RegisteredListSessions(tmux_lib::exception::TmuxCreatorException),
-    SendCommandToNeovim(String), // TODO
     ReadConfig(tmux_lib::exception::TmuxCreatorException),
 }
 
@@ -24,9 +23,6 @@ impl NeovimException {
                     session_name,
                     e.message()
                 )
-            }
-            NeovimException::SendCommandToNeovim(command) => {
-                format!("Failed to send command \"{}\" to Neovim.", command)
             }
             NeovimException::RegisteredListSessions(e) => {
                 format!(

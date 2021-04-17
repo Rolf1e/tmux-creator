@@ -9,5 +9,4 @@ edition = "2018"
 [dependencies]
 nvim-rs = { version = "0.2", features = ["use_tokio"] }
 tmux-lib = { path = "../tmux-lib" }
-tokio = { version = "1.1.1", features = ["full"] }
-mock_derive = "0.8.0"
+neovim-plugin = { path = "../neovim-plugin" }
