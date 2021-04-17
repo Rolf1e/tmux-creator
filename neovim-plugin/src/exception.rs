@@ -1,4 +1,3 @@
-use neovim_lib::CallError;
 
 pub enum NeovimException {
     UnknowMessage(String),
@@ -6,7 +5,6 @@ pub enum NeovimException {
     KillSession(String, tmux_lib::exception::TmuxCreatorException),
     LaunchSession(String),
     RegisteredListSessions(tmux_lib::exception::TmuxCreatorException),
-    SendCommandToNeovim(String, CallError),
     ReadConfig(tmux_lib::exception::TmuxCreatorException),
 }
 
@@ -25,9 +23,6 @@ impl NeovimException {
                     session_name,
                     e.message()
                 )
-            }
-            NeovimException::SendCommandToNeovim(command, e) => {
-                format!("Failed to send command \"{}\" to Neovim. \n {}", command, e)
             }
             NeovimException::RegisteredListSessions(e) => {
                 format!(
