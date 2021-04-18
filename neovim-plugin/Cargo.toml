@@ -13,3 +13,4 @@ tokio-util = { version = "0.6.3", features = ["compat"], optional = true }
 futures = "0.3.12"
 nvim-rs = { version = "0.2", features = ["use_tokio"] }
 tokio = { version = "0.2.8", features = ["full"] }
+rmpv = "0.4.3"

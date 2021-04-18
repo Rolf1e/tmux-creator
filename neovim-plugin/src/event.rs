@@ -9,9 +9,9 @@ pub enum Event {
 }
 
 pub enum EventResponse {
+    Window(Vec<String>),
     Normal(String),
     Exception(NeovimException),
-    Array(Vec<String>),
 }
 
 impl EventResponse {
@@ -19,13 +19,7 @@ impl EventResponse {
         match self {
             EventResponse::Normal(message) => Ok(nvim_rs::Value::from(message.clone())),
             EventResponse::Exception(e) => Err(nvim_rs::Value::from(e.message())),
-            EventResponse::Array(list) => {
-                let list = list
-                    .iter()
-                    .map(|element| nvim_rs::Value::from(element.clone()))
-                    .collect();
-                Ok(nvim_rs::Value::Array(list))
-            }
+            EventResponse::Window(_) => Ok(nvim_rs::Value::Nil),
         }
     }
 }
@@ -68,14 +62,14 @@ fn list_registered_sessions() -> EventResponse {
         Err(e) => return EventResponse::Exception(NeovimException::ReadConfig(e)),
     };
     match tmux_lib::list_config_session(&file_name) {
-        Ok(sessions) => EventResponse::Array(sessions),
+        Ok(sessions) => EventResponse::Window(sessions),
         Err(e) => EventResponse::Exception(NeovimException::RegisteredListSessions(e)),
     }
 }
 
 fn list_session() -> EventResponse {
     match tmux_lib::list_tmux_session() {
-        Ok(sessions) => EventResponse::Array(sessions),
+        Ok(sessions) => EventResponse::Window(sessions),
         Err(e) => EventResponse::Exception(NeovimException::ListSessions(e)),
     }
 }

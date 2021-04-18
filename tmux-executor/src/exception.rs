@@ -1,5 +1,6 @@
 use tmux_lib::exception::TmuxCreatorException;
 
+
 pub enum TmuxExecutorException {
     ParseArgument(String),
     Empty,

@@ -6,6 +6,9 @@ pub enum NeovimException {
     LaunchSession(String),
     RegisteredListSessions(tmux_lib::exception::TmuxCreatorException),
     ReadConfig(tmux_lib::exception::TmuxCreatorException),
+    Convertion(String),
+    Extract(String),
+    WindowCreation(Box<nvim_rs::error::CallError>),
 }
 
 impl NeovimException {
@@ -35,6 +38,15 @@ impl NeovimException {
             }
             NeovimException::LaunchSession(reason) => {
                 format!("Failed to launch session: {}", reason)
+            }
+            NeovimException::Convertion(value) => {
+                format!("Failed to convert neovim arguments, value: {}", value)
+            }
+            NeovimException::Extract(key) => {
+                format!("Failed to extract neovim arguments, key: {}", key)
+            }
+            NeovimException::WindowCreation(e) => {
+                format!("Failed to create window : {}", e)
             }
         }
     }
