@@ -70,7 +70,10 @@ impl WindowMaker {
             (String::from("nowait"), true),
             (String::from("noremap"), true),
         ];
-        self.add_key_map(&buffer, "n", "q", ":close<CR>", opts)
+        self.add_key_map(&buffer, "n", "q", ":close<CR>", opts.clone())
+            .await?;
+
+        self.add_key_map(&buffer, "n", "<CR>", ":LaunchSession <C-R><C-W> <CR>", opts)
             .await?;
         let width: i64 = 50;
         let height: i64 = 50;
@@ -118,6 +121,15 @@ impl WindowMaker {
             Ok(())
         }
     }
+
+    async fn get_current_line(&self) -> Result<String, NeovimException> {
+        match self.neovim.get_current_line().await {
+            Ok(line) => Ok(line),
+            Err(e) => Err(NeovimException::WindowCreation(e)),
+        }
+
+    }
+
 
     async fn create_buffer(&self) -> Result<nvim_rs::Buffer<Writer>, NeovimException> {
         match self.neovim.create_buf(false, true).await {
@@ -169,7 +181,7 @@ impl WindowMaker {
         if let Some(data) = ui.as_map() {
             let mut final_data = Vec::new();
             for (key, value) in data {
-                final_data.push((Self::parse_value(key)?, value.to_string()));
+                final_data.push((Self::parse_key(key)?, value.to_string()));
             }
             Ok(final_data)
         } else {
@@ -183,7 +195,7 @@ impl WindowMaker {
     }
 
     // I'm doing this because to_string add '\', and that's anoying
-    fn parse_value(value: &Value) -> Result<String, NeovimException> {
+    fn parse_key(value: &Value) -> Result<String, NeovimException> {
         if let Some(value) = value.as_str() {
             Ok(String::from(value))
         } else {
@@ -196,7 +208,6 @@ impl WindowMaker {
         key: &str,
     ) -> Result<T, NeovimException> {
         if let Some((_, value)) = data.into_iter().find(|(i_key, _)| i_key == key) {
-            logger::log("Hello");
             Self::parse_neovim_value(&value)
         } else {
             Err(NeovimException::Extract(String::from(key)))
