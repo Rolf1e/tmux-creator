@@ -39,13 +39,13 @@ endfunction
 
 function! s:rpcMessage(...) 
   let s:message = get(a:, 1, 0)
-  return rpcrequest(s:tmux_creator_job_id, s:message)
+  echo rpcrequest(s:tmux_creator_job_id, s:message)
 endfunction
 
 function! s:rpcMessageOneParameter(...) 
   let s:message = get(a:, 1, 0)
   let s:session_name = get(a:, 2, 0)
-  call rpcrequest(s:tmux_creator_job_id, s:message, s:session_name)
+  echo rpcrequest(s:tmux_creator_job_id, s:message, s:session_name)
 endfunction
 
 call s:connect()

@@ -1,6 +1,6 @@
 use crate::exception::NeovimException;
 use crate::window_builder::Type;
-use crate::window_builder::{Window, WindowBuilder, KeyMap};
+use crate::window_builder::{KeyMap, Window, WindowBuilder};
 use tmux_lib::config;
 
 pub enum Event {
@@ -65,21 +65,34 @@ fn list_registered_sessions(ui_width: i64, ui_height: i64) -> EventResponse {
         Err(e) => return EventResponse::Exception(NeovimException::ReadConfig(e)),
     };
     match tmux_lib::list_config_session(&file_name) {
-        Ok(sessions) => {
-            EventResponse::Window(create_basic_window(sessions, String::from(":LaunchSession <C-R><C-W> <CR>"), ui_width, ui_height))
-        },
+        Ok(sessions) => EventResponse::Window(create_basic_window(
+            sessions,
+            String::from(":LaunchSession <C-R><C-W> <CR>:close<CR>"),
+            ui_width,
+            ui_height,
+        )),
         Err(e) => EventResponse::Exception(NeovimException::RegisteredListSessions(e)),
     }
 }
 
 fn list_session(ui_width: i64, ui_height: i64) -> EventResponse {
     match tmux_lib::list_tmux_session() {
-        Ok(sessions) => EventResponse::Window(create_basic_window(sessions, String::from(":KillSession <C-R><C-W> <CR>"), ui_width, ui_height)),
+        Ok(sessions) => EventResponse::Window(create_basic_window(
+            sessions,
+            String::from(":KillSession <C-R><C-W> <CR>:close<CR>"),
+            ui_width,
+            ui_height,
+        )),
         Err(e) => EventResponse::Exception(NeovimException::ListSessions(e)),
     }
 }
 
-fn create_basic_window(sessions: Vec<String>, mapping: String, ui_width: i64, ui_height: i64) -> Window {
+fn create_basic_window(
+    sessions: Vec<String>,
+    mapping: String,
+    ui_width: i64,
+    ui_height: i64,
+) -> Window {
     let mut window_builder = WindowBuilder::default();
     window_builder.set_text(sessions);
 
@@ -89,28 +102,44 @@ fn create_basic_window(sessions: Vec<String>, mapping: String, ui_width: i64, ui
         (String::from("noremap"), true),
     ];
 
-    window_builder.set_key_maps(
-        vec![
-            KeyMap::new(String::from("n"), String::from("q"), String::from(":close<CR>"), opts.clone()),
-            KeyMap::new(String::from("n"), String::from("<CR>"), mapping, opts.clone()),
-        ]
-    );
+    window_builder.set_key_maps(vec![
+        KeyMap::new(
+            String::from("n"),
+            String::from("q"),
+            String::from(":close<CR>"),
+            opts.clone(),
+        ),
+        KeyMap::new(
+            String::from("n"),
+            String::from("<CR>"),
+            mapping,
+            opts.clone(),
+        ),
+    ]);
     window_builder.set_ui_settings(simple_ui_settings(ui_width, ui_height));
     window_builder.build()
 }
 
 fn simple_ui_settings(ui_width: i64, ui_height: i64) -> Vec<(String, Type)> {
     let width: i64 = 50;
-    let height: i64 = 50;
+    let height: i64 = 30;
     vec![
-        ( String::from("relative"), Type::String(String::from("editor"))),
-        ( String::from("width"), Type::Integer(width)),
-        ( String::from("height"), Type::Integer(height)),
-        ( String::from("col"), Type::Integer((ui_width / 2) - (width / 2))),
-        ( String::from("row"), Type::Integer((ui_height / 2) - (height / 2))),
-        ( String::from("anchor"), Type::String(String::from("NW"))),
-        ( String::from("style"), Type::String(String::from("minimal"))),
-        ( String::from("border"), Type::String(String::from("single"))),
+        (
+            String::from("relative"),
+            Type::String(String::from("editor")),
+        ),
+        (String::from("width"), Type::Integer(width)),
+        (String::from("height"), Type::Integer(height)),
+        (
+            String::from("col"),
+            Type::Integer((ui_width / 2) - (width / 2)),
+        ),
+        (
+            String::from("row"),
+            Type::Integer((ui_height / 2) - (height / 2)),
+        ),
+        (String::from("anchor"), Type::String(String::from("NW"))),
+        (String::from("style"), Type::String(String::from("minimal"))),
+        (String::from("border"), Type::String(String::from("single"))),
     ]
 }
-

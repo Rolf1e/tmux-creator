@@ -3,7 +3,11 @@ I wanted to play a bit with Rust term client making
 
 
 ## TODO
+ - [ ] Add some error check on the session we are killing (I'm pretty sure it's
+   bad to kill the session we are lel)
  - [ ] Check if there is a possibility to communicate threw TMUX sockets ` lsof -U | grep '^tmux'`
+ - [ ] Installation script
+ - [ ] Testing with vader
 
 ## Installation 
 
