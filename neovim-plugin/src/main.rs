@@ -1,5 +1,6 @@
 mod event_handler;
 mod neovim_handler;
+mod window_builder;
 mod event;
 mod messages;
 mod exception;

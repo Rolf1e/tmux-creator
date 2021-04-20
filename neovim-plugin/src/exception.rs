@@ -1,4 +1,5 @@
 
+#[derive(Debug)]
 pub enum NeovimException {
     UnknowMessage(String),
     ListSessions(tmux_lib::exception::TmuxCreatorException),

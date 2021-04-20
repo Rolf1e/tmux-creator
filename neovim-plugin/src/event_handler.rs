@@ -12,8 +12,13 @@ impl EventHandler {
         EventHandler
     }
 
-    pub fn handle_event(&self, event: String, values: Vec<nvim_rs::Value>) -> EventResponse {
-        match interprete_event(event, values) {
+    pub fn handle_event(
+        &self,
+        event: String,
+        values: Vec<nvim_rs::Value>,
+        (ui_width, ui_height): (i64, i64),
+    ) -> EventResponse {
+        match interprete_event(event, values, (ui_width, ui_height)) {
             Ok(event) => event.execute(),
             Err(e) => EventResponse::Exception(e),
         }
@@ -26,11 +31,15 @@ impl Default for EventHandler {
     }
 }
 
-fn interprete_event(event: String, values: Vec<nvim_rs::Value>) -> Result<Event, NeovimException> {
+fn interprete_event(
+    event: String,
+    values: Vec<nvim_rs::Value>,
+    (ui_width, ui_height): (i64, i64),
+) -> Result<Event, NeovimException> {
     match Message::from(event) {
         Message::Unknow(message) => Err(NeovimException::UnknowMessage(message)),
-        Message::ListSessions => Ok(Event::ListSessions),
-        Message::RegisteredSessions => Ok(Event::RegisteredSessions),
+        Message::ListSessions => Ok(Event::ListSessions(ui_width, ui_height)),
+        Message::RegisteredSessions => Ok(Event::RegisteredSessions(ui_width, ui_height)),
         Message::LaunchSession => Ok(Event::LaunchSession(extract_one_parameter(values)?)),
         Message::KillSession => Ok(Event::KillSession(extract_one_parameter(values)?)),
     }

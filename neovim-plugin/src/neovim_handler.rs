@@ -1,6 +1,8 @@
 use crate::event::EventResponse;
 use crate::event_handler::EventHandler;
 use crate::exception::NeovimException;
+use crate::window_builder::Type;
+use crate::window_builder::Window;
 use async_trait::async_trait;
 use nvim_rs;
 use nvim_rs::compat::tokio::Compat;
@@ -23,22 +25,13 @@ pub async fn build_neovim() -> (
 }
 
 #[derive(Clone)]
-struct NeovimHandler {
+pub struct NeovimHandler {
     event_handler: EventHandler,
+    neovim_window_handler: NeovimWindowHandler,
 }
 
 #[derive(Clone)]
-struct WindowMaker {
-    neovim: nvim_rs::Neovim<Writer>,
-}
-
-impl NeovimHandler {
-    fn new() -> Self {
-        NeovimHandler {
-            event_handler: EventHandler::default(),
-        }
-    }
-}
+pub struct NeovimWindowHandler;
 
 #[async_trait]
 impl nvim_rs::Handler for NeovimHandler {
@@ -50,10 +43,14 @@ impl nvim_rs::Handler for NeovimHandler {
         args: Vec<nvim_rs::Value>,
         neovim: nvim_rs::Neovim<Self::Writer>,
     ) -> Result<nvim_rs::Value, nvim_rs::Value> {
-        let event_response = self.event_handler.handle_event(name, args);
-        if let EventResponse::Window(ref text) = event_response {
-            let window_maker = WindowMaker { neovim };
-            if let Err(e) = window_maker.write_to_popup_window(text.clone()).await {
+        let (ui_width, ui_height) = self.get_ui_size(&neovim).await?;
+        let event_response = self.event_handler.handle_event(name, args, (ui_width, ui_height));
+        if let EventResponse::Window(ref window) = event_response {
+            if let Err(e) = self
+                .neovim_window_handler
+                .write_to_popup_window(neovim, window)
+                .await
+            {
                 logger::error(&e.message());
             }
         }
@@ -61,78 +58,52 @@ impl nvim_rs::Handler for NeovimHandler {
     }
 }
 
-impl WindowMaker {
-    pub async fn write_to_popup_window(&self, text: Vec<String>) -> Result<(), NeovimException> {
-        let buffer = self.create_buffer().await?;
-        self.add_lines_to_buffer(&buffer, text).await?;
-        let opts = vec![
-            (String::from("silent"), true),
-            (String::from("nowait"), true),
-            (String::from("noremap"), true),
-        ];
-        self.add_key_map(&buffer, "n", "q", ":close<CR>", opts.clone())
-            .await?;
+impl NeovimWindowHandler {
 
-        self.add_key_map(&buffer, "n", "<CR>", ":LaunchSession <C-R><C-W> <CR>", opts)
-            .await?;
-        let width: i64 = 50;
-        let height: i64 = 50;
+    pub async fn write_to_popup_window(
+        &self,
+        neovim: nvim_rs::Neovim<Writer>,
+        window: &Window,
+    ) -> Result<(), NeovimException> {
+        let buffer = self.create_buffer(&neovim).await?;
+        self.add_lines_to_buffer(&buffer, window.get_text().clone()).await?;
 
-        let data = self.get_first_uis().await?;
+        for key_map in window.get_key_maps() {
+            self.add_key_map(
+                &buffer,
+                key_map.get_mode(), 
+                key_map.get_mapping(),
+                key_map.get_command(),
+                key_map.get_opts().clone(),
+            )
+                .await?;
+        }
 
-        let ui_width: i64 = Self::extract_data_from_value_map(&data, "width")?;
-        let ui_height: i64 = Self::extract_data_from_value_map(&data, "height")?;
+        let opts: Vec<(nvim_rs::Value, nvim_rs::Value)> = window.get_ui_settings()
+            .into_iter()
+            .map(|(key, value)| (nvim_rs::Value::from(key.clone()), Self::parse_type_to_value(value)))
+            .collect();
 
-        let opts = vec![
-            (
-                nvim_rs::Value::from("relative"),
-                nvim_rs::Value::from("editor"),
-            ),
-            (
-                nvim_rs::Value::from("width"),
-                nvim_rs::Value::Integer(rmpv::Integer::from(width)),
-            ),
-            (
-                nvim_rs::Value::from("height"),
-                nvim_rs::Value::Integer(rmpv::Integer::from(height)),
-            ),
-            (
-                nvim_rs::Value::from("col"),
-                nvim_rs::Value::Integer(rmpv::Integer::from((ui_width / 2) - (width / 2))),
-            ),
-            (
-                nvim_rs::Value::from("row"),
-                nvim_rs::Value::Integer(rmpv::Integer::from((ui_height / 2) - (height / 2))),
-            ),
-            (nvim_rs::Value::from("anchor"), nvim_rs::Value::from("NW")),
-            (
-                nvim_rs::Value::from("style"),
-                nvim_rs::Value::from("minimal"),
-            ),
-            (
-                nvim_rs::Value::from("border"),
-                nvim_rs::Value::from("single"),
-            ),
-        ];
-
-        if let Err(e) = self.neovim.open_win(&buffer, true, opts).await {
+        if let Err(e) = neovim.open_win(&buffer, true, opts).await {
             Err(NeovimException::WindowCreation(e))
         } else {
             Ok(())
         }
+
     }
 
-    async fn get_current_line(&self) -> Result<String, NeovimException> {
-        match self.neovim.get_current_line().await {
-            Ok(line) => Ok(line),
-            Err(e) => Err(NeovimException::WindowCreation(e)),
+    fn parse_type_to_value(t: &Type) ->  nvim_rs::Value {
+        match t {
+            Type::Integer(v) => nvim_rs::Value::Integer(rmpv::Integer::from(v.clone())),
+            Type::String(v) => nvim_rs::Value::from(v.clone()),
         }
-
     }
 
-
-    async fn create_buffer(&self) -> Result<nvim_rs::Buffer<Writer>, NeovimException> {
-        match self.neovim.create_buf(false, true).await {
+    async fn create_buffer(
+        &self,
+        neovim: &nvim_rs::Neovim<Writer>,
+    ) -> Result<nvim_rs::Buffer<Writer>, NeovimException> {
+        match neovim.create_buf(false, true).await {
             Ok(buffer) => Ok(buffer),
             Err(e) => Err(NeovimException::WindowCreation(e)),
         }
@@ -169,15 +140,49 @@ impl WindowMaker {
         }
     }
 
-    async fn list_uis(&self) -> Result<Vec<Value>, NeovimException> {
-        match self.neovim.list_uis().await {
+}
+
+impl NeovimHandler {
+    fn new() -> Self {
+        NeovimHandler {
+            event_handler: EventHandler::default(),
+            neovim_window_handler: NeovimWindowHandler,
+        }
+    }
+
+    async fn get_ui_size(&self, neovim: &nvim_rs::Neovim<Writer>) -> Result<(i64, i64), nvim_rs::Value> {
+        let data = match self.get_first_uis(&neovim).await {
+            Ok(data) => data,
+            Err(e) => return Err(nvim_rs::Value::from(e.message())),
+        };
+
+        let ui_width: i64 = match Self::extract_data_from_value_map(&data, "width") {
+            Ok(ui_width)=> ui_width,
+            Err(e) => return Err(nvim_rs::Value::from(e.message())),
+        };
+        let ui_height: i64 = match Self::extract_data_from_value_map(&data, "height") {
+            Ok(ui_height)=> ui_height,
+            Err(e) => return Err(nvim_rs::Value::from(e.message())),
+        };
+
+        Ok((ui_width, ui_height))
+    }
+
+    async fn list_uis(
+        &self,
+        neovim: &nvim_rs::Neovim<Writer>,
+    ) -> Result<Vec<Value>, NeovimException> {
+        match neovim.list_uis().await {
             Ok(values) => Ok(values),
             Err(e) => Err(NeovimException::WindowCreation(e)),
         }
     }
 
-    async fn get_first_uis(&self) -> Result<Vec<(String, String)>, NeovimException> {
-        let ui = &self.list_uis().await?[0];
+    async fn get_first_uis(
+        &self,
+        neovim: &nvim_rs::Neovim<Writer>,
+    ) -> Result<Vec<(String, String)>, NeovimException> {
+        let ui = &self.list_uis(neovim).await?[0];
         if let Some(data) = ui.as_map() {
             let mut final_data = Vec::new();
             for (key, value) in data {
@@ -220,5 +225,11 @@ impl WindowMaker {
         } else {
             Err(NeovimException::Convertion(String::from(value)))
         }
+    }
+}
+
+impl Default for NeovimHandler {
+    fn default() -> Self {
+        Self::new()
     }
 }
