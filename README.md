@@ -16,7 +16,7 @@ It is a small binary to manage tmux sessions.
 
 ```bash
   git clone https://github.com/Rolf1e/tmux-creator
-  sudo make install
+  make release && sudo make install
 ``` 
 ## Configuration
 TmuxCreator works by reading a file at `~/.config/tmux-creator.yml`
@@ -45,9 +45,8 @@ $tmcr -h
 
 Available commands
 
-`:TmuxCreatorRegisteredSession`: list registered sessions
-`:TmuxCreatorListSession`: list running sessions
-
-`:TmuxCreatorLaunchSession session `: lauch a registered tmux session 
-`:TmuxCreatorKillSession session`: kill a launched session
+- `:TmuxCreatorRegisteredSession`: list registered sessions
+- `:TmuxCreatorListSession`: list running sessions
+- `:TmuxCreatorLaunchSession session `: lauch a registered tmux session 
+- `:TmuxCreatorKillSession session`: kill a launched session
 
