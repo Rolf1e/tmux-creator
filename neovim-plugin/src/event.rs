@@ -67,7 +67,7 @@ fn list_registered_sessions(ui_width: i64, ui_height: i64) -> EventResponse {
     match tmux_lib::list_config_session(&file_name) {
         Ok(sessions) => EventResponse::Window(create_basic_window(
             sessions,
-            String::from(":LaunchSession <C-R><C-W> <CR>:close<CR>"),
+            String::from(":TmuxCreatorLaunchSession <C-R><C-W> <CR>:close<CR>"),
             ui_width,
             ui_height,
         )),
@@ -79,7 +79,7 @@ fn list_session(ui_width: i64, ui_height: i64) -> EventResponse {
     match tmux_lib::list_tmux_session() {
         Ok(sessions) => EventResponse::Window(create_basic_window(
             sessions,
-            String::from(":KillSession <C-R><C-W> <CR>:close<CR>"),
+            String::from(":TmuxCreatorKillSession <C-R><C-W> <CR>:close<CR>"),
             ui_width,
             ui_height,
         )),

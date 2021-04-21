@@ -11,6 +11,7 @@ It is a small binary to manage tmux sessions.
  - [ ] Check if there is a possibility to communicate threw TMUX sockets ` lsof -U | grep '^tmux'`
  - [ ] Installation script
  - [ ] Testing with vader
+ - [ ] Better documentation with screenshots
 
 ## Installation 
 
@@ -22,9 +23,7 @@ It is a small binary to manage tmux sessions.
 TmuxCreator works by reading a file at `~/.config/tmux-creator.yml`
 ```
   # setup up config 
-  cd ~/.config
-  mkdir tmux-creator
-  touch config.yml # you can help yourself with config-sample.yml
+  touch ~/.config/tmux-creator.yml # you can help yourself with config-sample.yml
 ``` 
 
 ## Binary 
@@ -42,7 +41,9 @@ $tmcr -h
 
 
 ## Vim plugin
+You can install with [vim-plug](https://github.com/junegunn/vim-plug) for now. (Still WIP)
 
+`Plug 'Rolf1e/tmux-creator', {'do': 'make vim-install'}`
 Available commands
 
 - `:TmuxCreatorRegisteredSession`: list registered sessions
