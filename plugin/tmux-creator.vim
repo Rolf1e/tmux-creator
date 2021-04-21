@@ -3,7 +3,7 @@ if !exists('s:tmux_creator_job_id')
 endif
 
 " let s:tmux_creator_path_bin = '/media/rolfie/ssd2/projects/tmux-creator/target/release/neovim-plugin'
-let s:tmux_creator_path_bin = './plugin/tmux-creator/target/release/neovim-plugin'
+let s:tmux_creator_path_bin = 'tmux-creator/target/release/neovim-plugin'
 let s:ListSession = 'list'
 let s:RegisteredListSession = 'registered'
 let s:LaunchSession = 'launch'
