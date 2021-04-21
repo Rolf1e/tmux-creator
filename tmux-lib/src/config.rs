@@ -1,7 +1,7 @@
 use crate::exception::TmuxCreatorException;
 use std::path::Path;
 
-pub const DEFAULT_CONFIG_FILE: &str = "/.config/tmux-creator/config.yml";
+pub const DEFAULT_CONFIG_FILE: &str = "/.config/tmux-creator.yml";
 
 pub fn resolve_home_dir() -> Result<String, TmuxCreatorException> {
     if let Some(path) = home::home_dir() {

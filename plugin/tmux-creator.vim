@@ -31,10 +31,10 @@ function! s:initRpc()
 endfunction
 
 function! s:configureCommands()
-  command! -nargs=+ LaunchSession :call s:rpcMessageOneParameter(s:LaunchSession, <f-args>)
-  command! -nargs=+ KillSession :call s:rpcMessageOneParameter(s:KillSession, <f-args>)
-  command! -nargs=0 RegisteredSession :call s:rpcMessage(s:RegisteredListSession)
-  command! -nargs=0 ListSession :call s:rpcMessage(s:ListSession)
+  command! -nargs=+ TmuxCreatorLaunchSession :call s:rpcMessageOneParameter(s:LaunchSession, <f-args>)
+  command! -nargs=+ TmuxCreatorKillSession :call s:rpcMessageOneParameter(s:KillSession, <f-args>)
+  command! -nargs=0 TmuxCreatorRegisteredSession :call s:rpcMessage(s:RegisteredListSession)
+  command! -nargs=0 TmuxCreatorListSession :call s:rpcMessage(s:ListSession)
 endfunction
 
 function! s:rpcMessage(...) 
