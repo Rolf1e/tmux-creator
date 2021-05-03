@@ -2,8 +2,11 @@ if !exists('s:tmux_creator_job_id')
 	let s:tmux_creator_job_id = 0
 endif
 
-" let s:tmux_creator_path_bin = '/media/rolfie/ssd2/projects/tmux-creator/target/release/neovim-plugin'
-let s:tmux_creator_path_bin = 'tmux-creator/target/release/neovim-plugin'
+function! s:resolveBinaryPath()
+  let file_path = nvim_get_runtime_file("plugin/tmux-creator.vim", v:false)[0]
+  let s:tmux_creator_path_bin = fnamemodify(file_path, ":h:h") . '/target/release/neovim-plugin'
+endfunction
+
 let s:ListSession = 'list'
 let s:RegisteredListSession = 'registered'
 let s:LaunchSession = 'launch'
@@ -49,5 +52,6 @@ function! s:rpcMessageOneParameter(...)
   echo rpcrequest(s:tmux_creator_job_id, s:message, s:session_name)
 endfunction
 
+call s:resolveBinaryPath()
 call s:connect()
 
