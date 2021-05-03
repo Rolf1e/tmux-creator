@@ -43,7 +43,7 @@ $tmcr -h
 ## Vim plugin
 You can install with [vim-plug](https://github.com/junegunn/vim-plug) for now. (Still WIP)
 
-`Plug 'Rolf1e/tmux-creator', {'do': 'make vim-install', 'branch': 'feat/installer'}`
+`Plug 'Rolf1e/tmux-creator', {'do': 'make vim-install'}`
 Available commands
 
 - `:TmuxCreatorRegisteredSession`: list registered sessions
