@@ -3,6 +3,7 @@ mod test_application {
     use std::{thread, time};
     use tmux_lib;
 
+    #[ignore]
     #[test]
     fn should_create_session_and_kill_session() {
         let session = "test-session";
