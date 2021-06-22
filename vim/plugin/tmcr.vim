@@ -1,5 +1,4 @@
 call echo "Hello"
-
 if exists('g:loaded_tmux_creator')
   finish
 endif
