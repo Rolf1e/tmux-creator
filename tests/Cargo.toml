@@ -9,4 +9,3 @@ edition = "2018"
 [dependencies]
 nvim-rs = { version = "0.2", features = ["use_tokio"] }
 tmux-lib = { path = "../tmux-lib" }
-neovim-plugin = { path = "../neovim-plugin" }

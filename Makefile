@@ -8,9 +8,6 @@ test:
 	cargo test
 
 install:
-	cp ./target/release/tmux-executor /usr/bin/tmux-executor
-	mv /usr/bin/tmux-executor /usr/bin/tmcr
-
-vim-install: release
-
+	cargo build --release
+	sudo cp ./target/release/tmux-executor /usr/bin/tmcr
 

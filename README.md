@@ -13,11 +13,12 @@ It is a small binary to manage tmux sessions.
  - [ ] Testing with vader
  - [ ] Better documentation with screenshots
 
-## Installation 
 
+# Binary 
+## Installation 
 ```bash
   git clone https://github.com/Rolf1e/tmux-creator
-  make release && sudo make install
+  make install
 ``` 
 ## Configuration
 TmuxCreator works by reading a file at `~/.config/tmux-creator.yml`
@@ -25,8 +26,7 @@ TmuxCreator works by reading a file at `~/.config/tmux-creator.yml`
   # setup up config 
   touch ~/.config/tmux-creator.yml # you can help yourself with config-sample.yml
 ``` 
-
-## Binary 
+## Usage
 ```bash
 $tmcr -h
 
@@ -40,14 +40,23 @@ $tmcr -h
 ```
 
 
-## Vim plugin
+#Vim plugin
+## Installation 
 You can install with [vim-plug](https://github.com/junegunn/vim-plug) for now. (Still WIP)
 
-`Plug 'Rolf1e/tmux-creator', {'do': 'make vim-install'}`
-Available commands
+`Plug 'Rolf1e/tmux-creator', {'rtp': 'vim'}`
 
+Please make sure that the tmcr binary is installed !
+
+## Usage
 - `:TmuxCreatorRegisteredSession`: list registered sessions
 - `:TmuxCreatorListSession`: list running sessions
 - `:TmuxCreatorLaunchSession session `: lauch a registered tmux session 
 - `:TmuxCreatorKillSession session`: kill a launched session
+
+## Picker
+Integration with [FZF](https://github.com/junegunn/fzf.vim) !
+If fzf is already installed, it will be choose as default picker !
+
+# TODO native picker not working now
 
