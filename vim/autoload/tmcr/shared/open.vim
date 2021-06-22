@@ -1,5 +1,5 @@
-let s:cli = function("tmcr#shared#cli#call")
+let s:cli = function("tmcr#shared#cli#call_void")
 
-function! tmcr#open_session(session)
-    return s:cli("-a " + a:session)
+function! tmcr#shared#open#open_session(session)
+    echo s:cli("-a " . a:session)
 endfunction

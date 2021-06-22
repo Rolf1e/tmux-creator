@@ -41,7 +41,7 @@ fn list_session() -> Result<(), TmuxExecutorException> {
     match tmux_lib::list_tmux_session() {
         Ok(sessions) => {
             let sessions = &sessions.join(", ");
-            println!("Opened sessions: {}", sessions);
+            println!("{}", sessions);
             Ok(())
         }
         Err(e) => Err(TmuxExecutorException::ListSession(e)),
@@ -63,7 +63,10 @@ fn new_session(file_name: &str, args: &[String]) -> Result<(), TmuxExecutorExcep
     }
     let session_name = args[2].clone();
     match tmux_lib::create_tmux_session(session_name.as_str(), file_name) {
-        Ok(_) => Ok(()),
+        Ok(_) => {
+            println!("Session {} opened", session_name);
+            Ok(())
+        },
         Err(e) => Err(TmuxExecutorException::NewSession(e)),
     }
 }
