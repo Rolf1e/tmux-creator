@@ -40,7 +40,7 @@ $tmcr -h
 ```
 
 
-#Vim plugin
+# Vim plugin
 ## Installation 
 You can install with [vim-plug](https://github.com/junegunn/vim-plug) for now. (Still WIP)
 
@@ -56,7 +56,8 @@ Please make sure that the tmcr binary is installed !
 
 ## Picker
 Integration with [FZF](https://github.com/junegunn/fzf.vim) !
+
 If fzf is already installed, it will be choose as default picker !
 
-# TODO native picker not working now
+Native picker **not working now**
 

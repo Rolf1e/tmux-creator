@@ -11,3 +11,5 @@ install:
 	cargo build --release
 	sudo cp ./target/release/tmux-executor /usr/bin/tmcr
 
+uninstall:
+	sudo rm /usr/bin/tmcr
